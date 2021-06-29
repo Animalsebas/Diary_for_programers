@@ -18,7 +18,7 @@ def sql_table(db):
     db.commit()
 def sql_connection():
     try:
-        db = sqlite3.connect('dbdfp.db')
+        db = sqlite3.connect('./dbdfp.db')
         return db
     except Error:
         print(Error)
@@ -29,11 +29,36 @@ def sql_insert(db, data):
 def get_entry():
     global res_entry
     res_entry = input("Entry:\n")
+def search_by_date():
+    print("Enter date: D/M/YYYY")
+    selected_date = input()
+    cursorObj = db.cursor()
+    cursorObj.execute("SELECT * FROM Diary WHERE date="+"'"+str(selected_date)+"'")
+    list_by_date = cursorObj.fetchall()
+    if list_by_date != []:
+        print(list_by_date)
+    else:
+        print("Not found")
+def remove_entry():
+    print("Enter date: D/M/YYYY")
+    selected_date = input()
+    cursorObj = db.cursor()
+    cursorObj.execute("SELECT * FROM Diary WHERE date="+"'"+str(selected_date)+"'")
+    list_by_date = cursorObj.fetchall()
+    if list_by_date != []:
+        print(list_by_date)
+        print("Select index:")
+        selected_index = input()
+        cursorObj.execute("Delete FROM Diary WHERE id="+str(selected_index))
+        db.commit()
+        print("DELETED")
+    else:
+        print("Not found")
 db = sql_connection()
 sql_table(db)
 print("DIARY FOR PROGRAMERS")
 while loop == 1:
-    print("Options: write, exit")
+    print("Options: write, read, delete, exit")
     option = input()
     option = option.lower()
     if option == "write":
@@ -42,5 +67,11 @@ while loop == 1:
         get_time()
         data = (str(res_date), str(res_time), str(res_entry))
         sql_insert(db, data)
+    elif option == "read":
+        search_by_date()
+    elif option == "delete":
+        remove_entry()
     elif option == "exit":
         loop = 0
+    else:
+        print("Not valid option")
